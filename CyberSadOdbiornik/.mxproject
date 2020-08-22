@@ -9,17 +9,17 @@ CDefines=USE_HAL_DRIVER;STM32F103xB;USE_HAL_DRIVER;USE_HAL_DRIVER;
 [PreviousGenFiles]
 AdvancedFolderStructure=true
 HeaderFileListSize=3
-HeaderFiles#0=F:/workspace_1.4.0/CyberSadOdbiornik/Core/Inc/stm32f1xx_it.h
-HeaderFiles#1=F:/workspace_1.4.0/CyberSadOdbiornik/Core/Inc/stm32f1xx_hal_conf.h
-HeaderFiles#2=F:/workspace_1.4.0/CyberSadOdbiornik/Core/Inc/main.h
+HeaderFiles#0=F:/git/repository/CyberSadOdbiornik/Core/Inc/stm32f1xx_it.h
+HeaderFiles#1=F:/git/repository/CyberSadOdbiornik/Core/Inc/stm32f1xx_hal_conf.h
+HeaderFiles#2=F:/git/repository/CyberSadOdbiornik/Core/Inc/main.h
 HeaderFolderListSize=1
-HeaderPath#0=F:/workspace_1.4.0/CyberSadOdbiornik/Core/Inc
+HeaderPath#0=F:/git/repository/CyberSadOdbiornik/Core/Inc
 HeaderFiles=;
 SourceFileListSize=3
-SourceFiles#0=F:/workspace_1.4.0/CyberSadOdbiornik/Core/Src/stm32f1xx_it.c
-SourceFiles#1=F:/workspace_1.4.0/CyberSadOdbiornik/Core/Src/stm32f1xx_hal_msp.c
-SourceFiles#2=F:/workspace_1.4.0/CyberSadOdbiornik/Core/Src/main.c
+SourceFiles#0=F:/git/repository/CyberSadOdbiornik/Core/Src/stm32f1xx_it.c
+SourceFiles#1=F:/git/repository/CyberSadOdbiornik/Core/Src/stm32f1xx_hal_msp.c
+SourceFiles#2=F:/git/repository/CyberSadOdbiornik/Core/Src/main.c
 SourceFolderListSize=1
-SourcePath#0=F:/workspace_1.4.0/CyberSadOdbiornik/Core/Src
+SourcePath#0=F:/git/repository/CyberSadOdbiornik/Core/Src
 SourceFiles=;
 

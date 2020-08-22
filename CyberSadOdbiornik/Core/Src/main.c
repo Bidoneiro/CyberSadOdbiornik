@@ -46,8 +46,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 nrf24l01 nrf;
-static const uint8_t rx_address[5] = {0,0,0,0,0};
-static const uint8_t tx_address[5] = {0,0,0,0,0};
+static const uint8_t rx_address[5] = {1,2,3,4,5};
+static const uint8_t tx_address[5] = {1,1,1,1,1};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -56,7 +56,8 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
-void NRF_Config();
+void NRF_Config(uint32_t *rx_data);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -71,7 +72,8 @@ void NRF_Config();
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+  char *s="hello world";
+  uint32_t data;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -95,13 +97,18 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_UART_Transmit(&huart2, (uint8_t*)s, strlen(s), 1000);
+  NRF_Config(&data);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+  	nrf_receive_packet(&nrf);
+
+    HAL_UART_Transmit(&huart2, (uint8_t*)data, 1, 1000);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -168,11 +175,11 @@ static void MX_SPI2_Init(void)
   hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi2.Init.NSS = SPI_NSS_SOFT;
+  hspi2.Init.NSS = SPI_NSS_HARD_OUTPUT;;
   hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_ENABLE;
   hspi2.Init.CRCPolynomial = 10;
   if (HAL_SPI_Init(&hspi2) != HAL_OK)
   {
@@ -200,7 +207,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 9600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -251,6 +258,16 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_15; // SCK, MOSI
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_INPUT;
+  GPIO_InitStruct.Pin = GPIO_PIN_14; // MISO
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
   /*Configure GPIO pin : NRF_CSN_Pin */
   GPIO_InitStruct.Pin = NRF_CSN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -271,10 +288,9 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void NRF_Config(){
-
+void NRF_Config(uint32_t *rx_data)
+{
 		//nrf24l01 nrf;
-	    uint32_t rx_data;
 
 
 	    nrf24l01_config config;
@@ -283,9 +299,9 @@ void NRF_Config(){
         config.crc_width        = NRF_CRC_WIDTH_1B;
         config.addr_width       = NRF_ADDR_WIDTH_5;
         config.payload_length   = 1;    // maximum is 32 bytes
-        config.retransmit_count = 10;   // maximum is 15 times
+        config.retransmit_count = 15;   // maximum is 15 times
         config.retransmit_delay = 0x0F; // 4000us, LSB:250us
-        config.rf_channel       = 0;
+        config.rf_channel       = 123;
         config.rx_address       = rx_address;
         config.tx_address       = tx_address;
         config.rx_buffer        = (uint8_t*)&rx_data;
@@ -299,6 +315,19 @@ void NRF_Config(){
         config.csn_port    = NRF_CSN_GPIO_Port;
         config.csn_pin     = NRF_CSN_Pin;
         nrf_init(&nrf, &config);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+
+	//HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_RESET);
+	//HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+//	if(GPIO_Pin == GPIO_PIN_12)
+//	{
+		nrf_irq_handler(&nrf);
+//	}
+//	HAL_Delay(1000);
+
 }
 /* USER CODE END 4 */
 
